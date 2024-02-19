@@ -28,6 +28,9 @@ public class Token{
 		return this.token + " ";
 		
 	}
+	public TokenType getTokenType() {
+		return token;
+	}
+	
 
 }
-enum TokenType { WORD, NUMBER, ENDOFLINE, PRINT, READ, INPUT, DATA, GOSUB, FOR, TO, STEP, NEXT, RETURN, IF, THEN, FUNCTION, WHILE, END, STRINGLITERAL, LESSEQUAL, GREATEREQUAL, NOTEQUALS, EQUALS, LESSTHAN, GREATERTHAN, LPAREN, RPAREN, ADD, SUBTRACT, MULTIPLY, DIVIDE, LABEL };

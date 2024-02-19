@@ -2,7 +2,7 @@ package lexer;
 
 import java.io.IOException;
 import java.util.LinkedList;
-
+import parser.Parser;
 
 
 public class Basic{
@@ -22,6 +22,8 @@ public class Basic{
 		for(Token t: tokensList) {
 			System.out.print(t.toString());
 		}
+		Parser parser = new Parser(tokensList);
+		parser.parse();
 	}
 
 }
