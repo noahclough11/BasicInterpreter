@@ -3,6 +3,7 @@ package lexer;
 import java.io.IOException;
 import java.util.LinkedList;
 import parser.Parser;
+import parser.ProgramNode;
 
 
 public class Basic{
@@ -22,8 +23,11 @@ public class Basic{
 		for(Token t: tokensList) {
 			System.out.print(t.toString());
 		}
+		System.out.println();
 		Parser parser = new Parser(tokensList);
-		parser.parse();
+		ProgramNode program = parser.parse();
+		System.out.println(program.toString());
+
 	}
 
 }

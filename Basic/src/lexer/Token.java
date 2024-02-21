@@ -31,6 +31,8 @@ public class Token{
 	public TokenType getTokenType() {
 		return token;
 	}
-	
+	public String getValue() {
+		return value;
+	}
 
 }

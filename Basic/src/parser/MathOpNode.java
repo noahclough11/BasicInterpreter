@@ -7,14 +7,12 @@ public class MathOpNode extends Node{
 	private MathOp operator;
 	@Override
 	public String toString() {
-		return left.toString() + operator + right.toString();
+		return "(" +left.toString() +" "+ operator +" "+ right.toString() + ")";
 	}
 	public  MathOpNode(MathOp op, Node leftNode,  Node rightNode) {
 		operator = op;
 		left = leftNode;
 		right = rightNode;
-		
-		
 	}
 	
 }
