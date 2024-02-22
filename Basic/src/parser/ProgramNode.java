@@ -1,11 +1,9 @@
 package parser;
 import java.util.LinkedList;
-
+//Represents a Basic program, using a list of nodes to represent the instructions of the program
 public class ProgramNode extends Node{
 	LinkedList<Node> instructions;
-	
 	public ProgramNode(LinkedList<Node> nodes) {
-		System.out.println("programConstructed");
 		this.instructions = nodes;
 		
 	}

@@ -10,6 +10,9 @@ public class Basic{
 	
 //  Translates given file into a list of Tokens
 //  and then prints out the list for debugging.
+//  Parses the token list into a list of nodes which represent
+//  instructions for a Basic program.
+//  prints the instructions node list for debugging.
 	public static void main(String[] args) throws IOException, lexer.InvalidCharacterException{
 
 		if(args.length != 1)

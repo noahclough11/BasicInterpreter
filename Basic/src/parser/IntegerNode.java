@@ -1,4 +1,6 @@
 package parser;
+
+//Represents an integer
 public class IntegerNode extends Node {
 	private int number;
 	@Override

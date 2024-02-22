@@ -1,5 +1,5 @@
 package parser;
-
+//Represents a floating point number
 public class FloatNode extends Node{
 	private double number;
 	@Override

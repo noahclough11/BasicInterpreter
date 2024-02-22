@@ -7,11 +7,11 @@ import lexer.Lexer;
 import lexer.InvalidCharacterException;
 
 public class UnitTests{
-	Lexer lex1 = new Lexer("56+\n5/3", 1);
+	Lexer lex1 = new Lexer("56.9+\n5/3", 1);
 	Lexer lex2 = new Lexer("(10+5)\n/\n(6*3)", 1);
-	Lexer lex3 = new Lexer("9*(1+4/8)", 1);
+	Lexer lex3 = new Lexer("9*(1+4/8.2)", 1);
 	Lexer lex4 = new Lexer("10/\n\n-9+2*3", 1);
-	Lexer lex5 = new Lexer("2*4/2*6+9-\n\n7+6", 1);
+	Lexer lex5 = new Lexer("2*4/2*6.4+9-\n\n7+6", 1);
 //orderOfOpTests verify that various expressions return the correct order of operations and skip newlines
 @Test
 public void orderOfOpTest1() throws InvalidCharacterException {
@@ -20,7 +20,7 @@ public void orderOfOpTest1() throws InvalidCharacterException {
 	ProgramNode program1 = parser1.parse();
 	String s = program1.toString();
 	System.out.println(program1.toString());
-	assertEquals("(56 ADD (5 DIVIDE 3))", s);
+	assertEquals("(56.9 ADD (5 DIVIDE 3))", s);
 }
 @Test
 public void orderOfOpTest2() throws InvalidCharacterException {
@@ -37,7 +37,7 @@ public void orderOfOpTest3() throws InvalidCharacterException {
 	ProgramNode program3 = parser3.parse();
 	String s = program3.toString();
 	System.out.println(program3.toString());
-	assertEquals("(9 MULTIPLY (1 ADD (4 DIVIDE 8)))", s);
+	assertEquals("(9 MULTIPLY (1 ADD (4 DIVIDE 8.2)))", s);
 }@Test
 public void orderOfOpTest4() throws InvalidCharacterException {
 	var lex4List = lex4.lex();
@@ -53,6 +53,6 @@ public void orderOfOpTest5() throws InvalidCharacterException {
 	ProgramNode program5 = parser5.parse();
 	String s = program5.toString();
 	System.out.println(program5.toString());
-	assertEquals("((((2 MULTIPLY 4) DIVIDE 2) MULTIPLY 6) ADD (9 SUBTRACT (7 ADD 6)))", s);
+	assertEquals("((((2 MULTIPLY 4) DIVIDE 2) MULTIPLY 6.4) ADD (9 SUBTRACT (7 ADD 6)))", s);
 }
 }

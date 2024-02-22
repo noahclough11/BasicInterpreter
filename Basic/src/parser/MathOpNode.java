@@ -1,5 +1,6 @@
 package parser;
-
+//Represents a math operation, with an operator and two operands,
+//numbers or other math operations which must be computed first
 public class MathOpNode extends Node{
 	enum MathOp{ADD, SUBTRACT, MULTIPLY, DIVIDE};
 	private Node left;
