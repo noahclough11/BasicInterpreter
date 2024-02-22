@@ -6,6 +6,7 @@ public class ProgramNode extends Node{
 	
 	public ProgramNode(LinkedList<Node> nodes) {
 		this.instructions = nodes;
+		
 	}
 	@Override
 	public String toString() {
