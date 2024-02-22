@@ -43,7 +43,6 @@ public class Parser{
 	}
 	Node Expression() {
 		System.out.println("startExp");
-		
 		Node left = Term();
 		MathOp op = null;
 		
@@ -52,9 +51,9 @@ public class Parser{
 				return left;	
 			}
 			op = MathOp.SUBTRACT;
-			
+			eatNewlines();
 		} else {
-			
+			eatNewlines();
 			op = MathOp.ADD;
 		}
 		if(tokenManager.MoreTokens()) {
@@ -75,13 +74,18 @@ public class Parser{
 		LinkedList<Node> mathNodes = new LinkedList<Node>();
 		Node left = Factor();
 		if(tokenManager.MatchAndRemove(TokenType.RPAREN).isPresent()) {
+			while(AcceptSeperators()) {
+				tokenManager.MatchAndRemove(TokenType.ENDOFLINE);
+			}
 			return left;
 		}
 		MathOp op = null;
 		if(tokenManager.MatchAndRemove(TokenType.MULTIPLY).isPresent()) {
+			eatNewlines();
 			op = MathOp.MULTIPLY;
 		}
-		if(tokenManager.MatchAndRemove(TokenType.DIVIDE).isPresent()) {		
+		if(tokenManager.MatchAndRemove(TokenType.DIVIDE).isPresent()) {
+			eatNewlines();
 			op = MathOp.DIVIDE;
 		}
 		if(op == null) {
@@ -144,6 +148,7 @@ public class Parser{
 
 	}
 	Node Factor() {
+		eatNewlines();
 		System.out.println("startFactor");
 		Optional<Token> t = tokenManager.MatchAndRemove(TokenType.NUMBER);
 		if(t.isEmpty()) {
@@ -175,7 +180,11 @@ public class Parser{
 		} 
 
 		return new IntegerNode(Integer.parseInt(number));
-		
+	
 	}
-
+	private void eatNewlines() {
+		while(AcceptSeperators()) {
+			tokenManager.MatchAndRemove(TokenType.ENDOFLINE);
+		}
+	}
  }

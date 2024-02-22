@@ -7,12 +7,12 @@ import lexer.Lexer;
 import lexer.InvalidCharacterException;
 
 public class UnitTests{
-	Lexer lex1 = new Lexer("56+5/3", 1);
-	Lexer lex2 = new Lexer("(10+5)/(6*3)", 1);
+	Lexer lex1 = new Lexer("56+\n5/3", 1);
+	Lexer lex2 = new Lexer("(10+5)\n/\n(6*3)", 1);
 	Lexer lex3 = new Lexer("9*(1+4/8)", 1);
-	Lexer lex4 = new Lexer("10/-9+2*3", 1);
-	Lexer lex5 = new Lexer("2*4/2*6+9-7+6", 1);
-
+	Lexer lex4 = new Lexer("10/\n\n-9+2*3", 1);
+	Lexer lex5 = new Lexer("2*4/2*6+9-\n\n7+6", 1);
+//orderOfOpTests verify that various expressions return the correct order of operations and skip newlines
 @Test
 public void orderOfOpTest1() throws InvalidCharacterException {
 	var lex1List = lex1.lex();
