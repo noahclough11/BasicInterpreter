@@ -10,7 +10,7 @@ public class Basic{
 	
 //  Translates given file into a list of Tokens
 //  and then prints out the list for debugging.
-	public static void main(String[] args) throws IOException, lexer.Lexer.InvalidCharacterException{
+	public static void main(String[] args) throws IOException, lexer.InvalidCharacterException{
 
 		if(args.length != 1)
 			throw new IOException();

@@ -5,6 +5,7 @@ public class ProgramNode extends Node{
 	LinkedList<Node> instructions;
 	
 	public ProgramNode(LinkedList<Node> nodes) {
+		System.out.println("programConstructed");
 		this.instructions = nodes;
 		
 	}

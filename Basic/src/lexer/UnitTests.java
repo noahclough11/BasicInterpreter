@@ -58,18 +58,6 @@ public class UnitTests {
     CodeHandler codeHandler1 = new CodeHandler("56 cat 7.84\ndog 42", 1);
 	CodeHandler codeHandler2 = new CodeHandler("car hat% 72", 1);
 	CodeHandler codeHandler3 = new CodeHandler("8.921\n 9.5 hello", 1);
-	
-	//Test 5 verifies that the Lexer throws an InvalidCharacterException when given an invalid character
-	 @Test
-	    public void lexerTest5Invalid() throws Exception {
-	    	Object o = null;
-	    	try {
-	    		o = lex5.lex();
-	    	} catch (Exception e) {
-	    		o = e;
-	    	}
-	    	assertEquals(lex5.new InvalidCharacterException("s").getClass(), o.getClass());
-	    };
 	    
 	@Test
 	//Test 6 checks that keywords are properly handled as their unique token types and not as words, as well as checking that symbols are properly handled

@@ -225,11 +225,5 @@ public class Lexer{
 		knownWords.put("WHILE", TokenType.WHILE);
 		knownWords.put("END", TokenType.END);
 	}
-	class InvalidCharacterException extends Exception{
-		private static final long serialVersionUID = 1L;
-
-		public InvalidCharacterException(String errorMessage) {
-			super(errorMessage);
-		}
-	}
+	
 	}
