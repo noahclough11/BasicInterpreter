@@ -12,7 +12,10 @@ public class UnitTests{
 	Lexer lex3 = new Lexer("9*(1+4/8.2)", 1);
 	Lexer lex4 = new Lexer("10/\n\n-9+2*3", 1);
 	Lexer lex5 = new Lexer("2*4/2*6.4+9-\n\n7+6", 1);
+	Lexer lex6 = new Lexer("PRINT(1+2,2+1)", 1);
+	Lexer lex7 = new Lexer("hello = 5+3", 1);
 //orderOfOpTests verify that various expressions return the correct order of operations and skip newlines
+//  !!  OrderOfOpTests currently do not work as the main method was changed to not  directly call expression
 @Test
 public void orderOfOpTest1() throws InvalidCharacterException {
 	var lex1List = lex1.lex();
@@ -54,5 +57,24 @@ public void orderOfOpTest5() throws InvalidCharacterException {
 	String s = program5.toString();
 	System.out.println(program5.toString());
 	assertEquals("((((2 MULTIPLY 4) DIVIDE 2) MULTIPLY 6.4) ADD (9 SUBTRACT (7 ADD 6)))", s);
+}
+//Test 6 tests the Statements() function's ability to process PrintNodes
+@Test
+public void printNodeTest() throws InvalidCharacterException {
+	var lex6List = lex6.lex();
+	Parser parser6 = new Parser(lex6List);
+	ProgramNode program6 = parser6.parse();
+	String s = program6.toString();
+	System.out.println(program6.toString());
+	assertEquals("PRINT((1 ADD 2)(2 ADD 1))", s);
+}
+//Test 7 tests the Statements() function's ability to process AssignmentNodes
+public void assignmentNodeTest() throws InvalidCharacterException {
+	var lex7List = lex7.lex();
+	Parser parser7 = new Parser(lex7List);
+	ProgramNode program7 = parser7.parse();
+	String s = program7.toString();
+	System.out.println(program7.toString());
+	assertEquals("variable(hello) = (5 ADD 2)", s);
 }
 }

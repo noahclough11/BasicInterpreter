@@ -37,7 +37,7 @@ public class Lexer{
 		while(!codeHandler.isDone()){
 			char next = codeHandler.GetChar();
 			
-			if(Pattern.matches("[^a-zA-Z_0-9\n\"<>=()+/* ]", ""+next)) {
+			if(Pattern.matches("[^a-zA-Z_0-9,\r\n\"<>=()+/* ]", ""+next)) {
 				if(next != '-') {
 				  throw new InvalidCharacterException("Invalid character <"+next+"> at line "+lineNumber+" position "+position);
 				}
@@ -59,6 +59,10 @@ public class Lexer{
 					tokenList.add(new Token(TokenType.ENDOFLINE, lineNumber, position));
 					lineNumber++;
 					position = 0;
+					break;
+				case ',':
+					tokenList.add(new Token(TokenType.COMMA, lineNumber, position));
+					position++;
 					break;
 				case '<','>','=','(',')','+','-','*','/':
 					if(codeHandler.isDone()) {

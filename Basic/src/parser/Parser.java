@@ -32,21 +32,99 @@ public class Parser{
 		LinkedList<Node> nodes = new LinkedList<Node>();
 		
 		//Loops through the list of tokens
-		while (tokenManager.MoreTokens()) {
-			
-			//calls expression if it finds a number, lparen, or negative
-			var t = tokenManager.Peek(0).get().getTokenType();
-		    if((t == (TokenType.NUMBER)|| (t == TokenType.SUBTRACT)|| (t == TokenType.LPAREN))){
-		      nodes.add(Expression());
-		     
-			while(tokenManager.Peek(0).isPresent()) {
-				tokenManager.MatchAndRemove(TokenType.RPAREN);
-				eatNewlines();
-			}
-			    
-			}
+		while (tokenManager.MoreTokens()) {			
+			nodes.add(Statements());
 		}
 		return new ProgramNode(nodes);
+	}
+	//Collects statements into a linkedList and then passes the statement list up to the parser
+	StatementsNode Statements() {
+		 var statements =  new LinkedList<StatementNode>();
+		 StatementNode state = null;
+		 do {
+			 
+			   state = Statement();
+			   if (state != null) {
+			  	 statements.add(state);
+			   }
+			   eatNewlines();
+			   if(!tokenManager.MoreTokens()) {
+				   state = null;
+			   }
+		 } while(state != null);
+		
+		return new StatementsNode(statements);
+	}
+	//collects assignment or print statements
+	StatementNode Statement() {
+		if(tokenManager.MoreTokens()) {
+		  var t = tokenManager.MatchAndRemove(TokenType.PRINT);
+		  if (t.isPresent()) {
+		  	return PrintStatement();
+		  }
+		  t = tokenManager.Peek(0);
+		  if (t.get().getTokenType() == TokenType.WORD) {
+			  return Assignment();
+		  }
+		  return null;
+		}
+		return null;
+	}
+	//Creates a printNode with the Print token and the list of tokens to be printed
+	PrintNode PrintStatement() {
+		tokenManager.MatchAndRemove(TokenType.LPAREN);
+		var t = tokenManager.MatchAndRemove(TokenType.RPAREN);
+		if (t.isPresent()) {
+			return null;
+		}
+		return new PrintNode(PrintList());
+	}
+	//Collects a comma separated list of expressions to pass to the PrintNode
+	LinkedList<Node> PrintList(){
+		var list = new LinkedList<Node>();
+		var t = tokenManager.Peek(0).get().getTokenType();
+		if((t == (TokenType.NUMBER)|| (t == TokenType.SUBTRACT)|| (t == TokenType.LPAREN)|| (t == TokenType.WORD))){
+	     boolean runAgain = false;
+		  do {
+	        list.add(Expression());
+	        if(tokenManager.MoreTokens()) {
+	        	if(tokenManager.MatchAndRemove(TokenType.COMMA).isPresent()) {
+	        		runAgain = true;
+	        	} else {
+	        		runAgain = false;
+	        	}
+	        } else {
+	        	runAgain = false;
+	        }
+	        
+	      } while (runAgain);
+		} else {
+			return null;
+		}
+		if(tokenManager.MoreTokens()){
+			tokenManager.MatchAndRemove(TokenType.RPAREN);
+		}
+		
+		return list;
+	}
+	//Takes a word as a variable and assigns an expression to it
+	AssignmentNode Assignment() {
+		String word;
+		if(tokenManager.Peek(0).isPresent() 
+				&& tokenManager.Peek(1).isPresent()
+				&& tokenManager.Peek(2).isPresent()) 
+		{
+			if ((tokenManager.Peek(0).get().getTokenType() == TokenType.WORD)&&(tokenManager.Peek(1).get().getTokenType() == TokenType.EQUALS)) {
+				word = tokenManager.MatchAndRemove(TokenType.WORD).get().getValue();
+				tokenManager.MatchAndRemove(TokenType.EQUALS);
+				return new AssignmentNode(new VariableNode(word), Expression());
+			} else {
+				return null;
+			}
+			
+		} else {
+			return null;
+		}
 	}
 	//Expression returns Term if it does not find a + or -
 	//If it finds a + or -, it returns a MathOpNode with the + or -, the first return of Term, and another return of Term
@@ -54,7 +132,12 @@ public class Parser{
 	Node Expression() {
 		Node left = Term();
 		MathOp op = null;
-		
+		if(tokenManager.MoreTokens()) {
+			if(tokenManager.Peek(0).get().getTokenType() == (TokenType.COMMA)) {
+				return left;
+			}
+		}
+		System.out.println(tokenManager.Peek(0).get().getTokenType());
 		if(tokenManager.MatchAndRemove(TokenType.ADD).isEmpty()) {
 			if(tokenManager.MatchAndRemove(TokenType.SUBTRACT).isEmpty()) {
 				return left;	
@@ -81,10 +164,15 @@ public class Parser{
 		LinkedList<MathOp> ops = new LinkedList<MathOp>();
 		LinkedList<Node> mathNodes = new LinkedList<Node>();
 		Node left = Factor();
-		if(tokenManager.MatchAndRemove(TokenType.RPAREN).isPresent()) {
-			while(AcceptSeperators()) {
-				tokenManager.MatchAndRemove(TokenType.ENDOFLINE);
+		if(tokenManager.MoreTokens()) {
+			if(tokenManager.Peek(0).get().getTokenType() == (TokenType.COMMA)) {
+				return left;
 			}
+		} else {
+			return left;
+		}
+		if(tokenManager.MatchAndRemove(TokenType.RPAREN).isPresent()) {
+			eatNewlines();
 			return left;
 		}
 		MathOp op = null;
@@ -158,6 +246,11 @@ public class Parser{
 			if(!t.isEmpty()) {
 				return Expression();
 			}
+			t = tokenManager.MatchAndRemove(TokenType.WORD);
+			if(!t.isEmpty()) {
+				return new VariableNode(t.get().getValue());
+			}
+			
 			t = tokenManager.MatchAndRemove(TokenType.SUBTRACT);
 			if(!t.isEmpty()) {
 				t = tokenManager.MatchAndRemove(TokenType.NUMBER);
