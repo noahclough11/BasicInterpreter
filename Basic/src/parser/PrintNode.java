@@ -10,11 +10,11 @@ public class PrintNode extends StatementNode{
 	}
 	@Override
 	public String toString() {
-		String s = "Print(";
+		String s = "Print: (";
 		for (Node n: toPrint) {
-			s += n.toString();
+			s += n.toString()+", ";
 		}
-		s += ")";
+		s += ")\n";
 		return s;
 	}
 	

@@ -8,8 +8,7 @@ public class VariableNode extends Node{
 	}
 	@Override
 	public String toString() {
-		
-		return name;
+		return "variable: "+name;
 	}
 	
 }

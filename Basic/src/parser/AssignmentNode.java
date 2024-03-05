@@ -9,7 +9,7 @@ public class AssignmentNode extends StatementNode{
 	}
 	@Override
 	public String toString() {
-		return "variable("+variable.toString() + ") = " + value.toString();
+		return variable.toString() +" = " + value.toString();
 	}
 	
 }

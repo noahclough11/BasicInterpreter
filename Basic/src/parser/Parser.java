@@ -66,9 +66,49 @@ public class Parser{
 		  if (t.get().getTokenType() == TokenType.WORD) {
 			  return Assignment();
 		  }
+		  t = tokenManager.MatchAndRemove(TokenType.READ);
+		  if (t.isPresent()) {
+			  return ReadStatement();
+		  }
+		  t = tokenManager.MatchAndRemove(TokenType.DATA);
+		  if (t.isPresent()) {
+			  return DataStatement();
+		  }
+		  t = tokenManager.MatchAndRemove(TokenType.INPUT);
+		  if (t.isPresent()) {
+			  return InputStatement();
+		  }
+		  
 		  return null;
 		}
 		return null;
+	}
+	//Creates a ReadNode with the input token and the list of parameters
+	ReadNode ReadStatement() {
+		tokenManager.MatchAndRemove(TokenType.LPAREN);
+		var t = tokenManager.MatchAndRemove(TokenType.RPAREN);
+		if (t.isPresent()) {
+			return null;
+		}
+		return new ReadNode(ReadList());
+	}
+	//Creates a DataNode with the input token and the list of parameters
+	DataNode DataStatement() {
+		tokenManager.MatchAndRemove(TokenType.LPAREN);
+		var t = tokenManager.MatchAndRemove(TokenType.RPAREN);
+		if (t.isPresent()) {
+			return null;
+		}
+		return new DataNode(DataList());
+	}
+	//Creates an InputNode with the input token and the list of parameters
+	InputNode InputStatement() {
+		tokenManager.MatchAndRemove(TokenType.LPAREN);
+		var t = tokenManager.MatchAndRemove(TokenType.RPAREN);
+		if (t.isPresent()) {
+			return null;
+		}
+		return new InputNode(InputList());
 	}
 	//Creates a printNode with the Print token and the list of tokens to be printed
 	PrintNode PrintStatement() {
@@ -79,33 +119,108 @@ public class Parser{
 		}
 		return new PrintNode(PrintList());
 	}
-	//Collects a comma separated list of expressions to pass to the PrintNode
+	//Checks if there are more items to be added to the comma separated list
+	private boolean runCommaListAgain() {
+		if(tokenManager.MoreTokens()) {
+        	if(tokenManager.MatchAndRemove(TokenType.COMMA).isPresent()) {
+        		return true;
+        	} else {
+        		return false;
+        	}
+        } else {
+        	return false;
+        }
+	}
+	//PrintList. ReadList, DataList, and InputList collect a comma separated list of nodes to pass to their respective Nodes
+	
 	LinkedList<Node> PrintList(){
 		var list = new LinkedList<Node>();
-		var t = tokenManager.Peek(0).get().getTokenType();
-		if((t == (TokenType.NUMBER)|| (t == TokenType.SUBTRACT)|| (t == TokenType.LPAREN)|| (t == TokenType.WORD))){
-	     boolean runAgain = false;
-		  do {
-	        list.add(Expression());
-	        if(tokenManager.MoreTokens()) {
-	        	if(tokenManager.MatchAndRemove(TokenType.COMMA).isPresent()) {
-	        		runAgain = true;
-	        	} else {
-	        		runAgain = false;
-	        	}
-	        } else {
-	        	runAgain = false;
-	        }
-	        
-	      } while (runAgain);
-		} else {
-			return null;
-		}
+		boolean runAgain = false;
+		do {
+		  var t = tokenManager.Peek(0).get().getTokenType();
+		  if((t == (TokenType.NUMBER)|| (t == TokenType.SUBTRACT)|| (t == TokenType.LPAREN)|| (t == TokenType.WORD))){     
+	          list.add(Expression());
+	          runAgain = runCommaListAgain();
+		  } else if(t == TokenType.STRINGLITERAL){
+			  list.add(new StringNode(tokenManager.MatchAndRemove(TokenType.STRINGLITERAL).get().getValue()));
+		      runAgain = runCommaListAgain();
+		  }
+		  else {
+			  return null;
+		  }
+		  } while (runAgain);
 		if(tokenManager.MoreTokens()){
-			tokenManager.MatchAndRemove(TokenType.RPAREN);
+	      tokenManager.MatchAndRemove(TokenType.RPAREN);
 		}
 		
-		return list;
+		 return list;
+	}
+	LinkedList<Node> ReadList(){
+		var list = new LinkedList<Node>();
+		boolean runAgain = false;
+		do {
+		  var t = tokenManager.Peek(0).get().getTokenType();
+		  if(t == TokenType.WORD){     
+	          list.add(new VariableNode(tokenManager.MatchAndRemove(TokenType.WORD).get().getValue()));
+	          runAgain = runCommaListAgain();
+		  } else {
+			  return null;
+		  }
+		  } while (runAgain);
+		if(tokenManager.MoreTokens()){
+	      tokenManager.MatchAndRemove(TokenType.RPAREN);
+		}
+		
+		 return list;
+	}
+	LinkedList<Node> DataList(){
+		var list = new LinkedList<Node>();
+		boolean runAgain = false;
+		do {
+		  var t = tokenManager.Peek(0).get().getTokenType();
+		  if(t == TokenType.STRINGLITERAL){     
+	          list.add(new StringNode(tokenManager.MatchAndRemove(TokenType.STRINGLITERAL).get().getValue()));
+	          runAgain = runCommaListAgain();
+		  } else if(t == TokenType.NUMBER){
+			  String num = tokenManager.MatchAndRemove(TokenType.NUMBER).get().getValue();
+			  if (num.contains(".")) {
+				   list.add(new FloatNode(Double.parseDouble(num)));
+			  } else {
+				  list.add(new IntegerNode(Integer.parseInt(num)));
+			  }
+		      runAgain = runCommaListAgain();
+		  }
+		  else {
+			  return null;
+		  }
+		  } while (runAgain);
+		if(tokenManager.MoreTokens()){
+	      tokenManager.MatchAndRemove(TokenType.RPAREN);
+		}
+		
+		 return list;
+	}
+	LinkedList<Node> InputList(){
+		var list = new LinkedList<Node>();
+		boolean runAgain = true;
+		if(tokenManager.Peek(0).get().getTokenType() == TokenType.STRINGLITERAL) {
+			list.add(new StringNode(tokenManager.MatchAndRemove(TokenType.STRINGLITERAL).get().getValue()));
+			runAgain = runCommaListAgain();
+		}
+		while (runAgain){
+			  var t = tokenManager.Peek(0).get().getTokenType();
+			  if(t == TokenType.WORD){     
+		          list.add(new VariableNode(tokenManager.MatchAndRemove(TokenType.WORD).get().getValue()));
+		          runAgain = runCommaListAgain();
+			  } else {
+				  return null;
+			  }
+		} 
+		if(tokenManager.MoreTokens()){
+	      tokenManager.MatchAndRemove(TokenType.RPAREN);
+		}
+		
+		 return list;
 	}
 	//Takes a word as a variable and assigns an expression to it
 	AssignmentNode Assignment() {
