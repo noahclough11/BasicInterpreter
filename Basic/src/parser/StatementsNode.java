@@ -11,7 +11,7 @@ public class StatementsNode extends Node{
 	public String toString() {
 		String s = "";
 		for (StatementNode n: statements) {
-			s += n.toString();
+			s += n.toString() + "\n";
 		}
 		return s;
 	}

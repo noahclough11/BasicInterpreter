@@ -228,6 +228,13 @@ public class Lexer{
 		knownWords.put("FUNCTION", TokenType.FUNCTION);
 		knownWords.put("WHILE", TokenType.WHILE);
 		knownWords.put("END", TokenType.END);
+		knownWords.put("RANDOM", TokenType.RANDOM);
+		knownWords.put("LEFT$", TokenType.LEFT$);
+		knownWords.put("RIGHT$", TokenType.RIGHT$);
+		knownWords.put("MID$", TokenType.MID$);
+		knownWords.put("NUM$", TokenType.NUM$);
+		knownWords.put("VAL", TokenType.VALINT);
+		knownWords.put("VAL%", TokenType.VALFLOAT);
 	}
 	
 	}

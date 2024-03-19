@@ -55,10 +55,38 @@ public class Parser{
 		
 		return new StatementsNode(statements);
 	}
-	//collects assignment or print statements
+	//collects the different types of statements and returns the corresponding Node
 	StatementNode Statement() {
 		if(tokenManager.MoreTokens()) {
-		  var t = tokenManager.MatchAndRemove(TokenType.PRINT);
+		  var t = tokenManager.MatchAndRemove(TokenType.LABEL);
+		  if(t.isPresent()) {
+			  return new LabeledStatementNode(t.get().getValue(), Statement());
+		  }
+		  t = tokenManager.MatchAndRemove(TokenType.FOR);
+		  if(t.isPresent()) {
+			  return ForStatement();
+		  }
+		  t = tokenManager.MatchAndRemove(TokenType.WHILE);
+		  if(t.isPresent()) {
+			  return WhileStatement();
+		  }
+		  t = tokenManager.MatchAndRemove(TokenType.END);
+		  if(t.isPresent()) {
+			  return new EndNode();
+		  }
+		  t = tokenManager.MatchAndRemove(TokenType.IF);
+		  if(t.isPresent()) {
+			  return IfStatement();
+		  }
+		  t = tokenManager.MatchAndRemove(TokenType.GOSUB);
+		  if(t.isPresent()) {
+			  return new GoSubStatementNode(tokenManager.MatchAndRemove(TokenType.LABEL).get().getValue());
+		  }
+		  t = tokenManager.MatchAndRemove(TokenType.RETURN);
+		  if(t.isPresent()) {
+			  return new ReturnNode();
+		  }
+		  t = tokenManager.MatchAndRemove(TokenType.PRINT);
 		  if (t.isPresent()) {
 		  	return PrintStatement();
 		  }
@@ -78,10 +106,42 @@ public class Parser{
 		  if (t.isPresent()) {
 			  return InputStatement();
 		  }
-		  
-		  return null;
+		  return functionInvocation();
 		}
 		return null;
+	}
+	//Creates a boolean expression using two expressions and a boolean operator
+	BooleanExpNode BooleanExp() {
+		Node left = Expression();
+		var op = tokenManager.Peek(0).get().getTokenType();
+		tokenManager.MatchAndRemove(op);
+		Node right = Expression();
+		return new BooleanExpNode(left,op,right);
+	}
+	//Collects a boolean expression and the label for and IfNode
+	IfNode IfStatement() {
+		var booleanExp = BooleanExp();
+		tokenManager.MatchAndRemove(TokenType.THEN);
+		return new IfNode(booleanExp, tokenManager.MatchAndRemove(TokenType.WORD).get().getValue());
+	}
+	//Collects a boolean expression and end label for a While loop
+	WhileNode WhileStatement() {
+		var booleanExp = BooleanExp();
+		return new WhileNode(booleanExp, tokenManager.MatchAndRemove(TokenType.WORD).get().getValue());
+	}
+	//Collects the counter variable and the limit for a For loop. Also collects the increment if given
+	ForNode ForStatement() {
+		Node increment;
+		Node variable = Assignment();
+		tokenManager.MatchAndRemove(TokenType.TO);
+		Node limit = Expression();
+		var t = tokenManager.MatchAndRemove(TokenType.STEP);
+		if(t.isPresent()) {
+			increment = Expression();
+		} else {
+			return new ForNode(variable, limit);
+		}
+		return new ForNode(variable, limit, increment);
 	}
 	//Creates a ReadNode with the input token and the list of parameters
 	ReadNode ReadStatement() {
@@ -241,18 +301,76 @@ public class Parser{
 			return null;
 		}
 	}
-	//Expression returns Term if it does not find a + or -
+	//collects arguments for a function, which can be Strings or numbers.
+	LinkedList<Node> parameterList(){
+		var list = new LinkedList<Node>();
+		tokenManager.MatchAndRemove(TokenType.LPAREN);
+		var rparen = tokenManager.MatchAndRemove(TokenType.RPAREN);
+		if (rparen.isPresent()) {
+			return null;
+		}
+		boolean runAgain = false;
+		do {
+		  var t = tokenManager.Peek(0).get().getTokenType();
+		  if((t == (TokenType.NUMBER)|| (t == TokenType.SUBTRACT)|| (t == TokenType.LPAREN)|| (t == TokenType.WORD))){     
+	          list.add(Expression());
+	          runAgain = runCommaListAgain();
+		  } else if(t == TokenType.STRINGLITERAL){
+			  list.add(new StringNode(tokenManager.MatchAndRemove(TokenType.STRINGLITERAL).get().getValue()));
+		      runAgain = runCommaListAgain();
+		  }
+		  else {
+			  return null;
+		  }
+		  } while (runAgain);
+		
+		tokenManager.MatchAndRemove(TokenType.RPAREN);
+		return list;
+	}
+	//Checks for known functions and the collects the arguments
+	FunctionNode functionInvocation() {
+		var t = tokenManager.Peek(0).get().getTokenType();
+		switch(t) {
+		case RANDOM:
+			tokenManager.MatchAndRemove(TokenType.RANDOM);
+			return new FunctionNode(t, parameterList());
+		case LEFT$:
+			tokenManager.MatchAndRemove(TokenType.LEFT$);
+			return new FunctionNode(t, parameterList());
+		case RIGHT$:
+			tokenManager.MatchAndRemove(TokenType.RIGHT$);
+			return new FunctionNode(t, parameterList());
+		case MID$:
+			tokenManager.MatchAndRemove(TokenType.MID$);
+			return new FunctionNode(t, parameterList());
+		case NUM$:
+			tokenManager.MatchAndRemove(TokenType.NUM$);
+			return new FunctionNode(t, parameterList());
+		case VALINT:
+			tokenManager.MatchAndRemove(TokenType.VALINT);
+			return new FunctionNode(t, parameterList());
+		case VALFLOAT:
+			tokenManager.MatchAndRemove(TokenType.VALFLOAT);
+			return new FunctionNode(t, parameterList());
+		default:
+			return null;
+		}
+	}
+	//Expression returns Term if it does not find a + or -, or a functionNode if given one
 	//If it finds a + or -, it returns a MathOpNode with the + or -, the first return of Term, and another return of Term
 	//If it finds multiple + or -, it continues calling itself until it can't find any more
 	Node Expression() {
+		var function = functionInvocation();
+		if (function != null) {
+			return function;
+		}
 		Node left = Term();
 		MathOp op = null;
 		if(tokenManager.MoreTokens()) {
-			if(tokenManager.Peek(0).get().getTokenType() == (TokenType.COMMA)) {
+			if(tokenManager.Peek(0).get().getTokenType() == (TokenType.COMMA)||tokenManager.Peek(0).get().getTokenType() == (TokenType.RPAREN)) {
 				return left;
 			}
 		}
-		System.out.println(tokenManager.Peek(0).get().getTokenType());
 		if(tokenManager.MatchAndRemove(TokenType.ADD).isEmpty()) {
 			if(tokenManager.MatchAndRemove(TokenType.SUBTRACT).isEmpty()) {
 				return left;	
@@ -280,12 +398,13 @@ public class Parser{
 		LinkedList<Node> mathNodes = new LinkedList<Node>();
 		Node left = Factor();
 		if(tokenManager.MoreTokens()) {
-			if(tokenManager.Peek(0).get().getTokenType() == (TokenType.COMMA)) {
+			if(tokenManager.Peek(0).get().getTokenType() == (TokenType.COMMA)||tokenManager.Peek(0).get().getTokenType() == (TokenType.RPAREN)) {
 				return left;
 			}
 		} else {
 			return left;
 		}
+		
 		if(tokenManager.MatchAndRemove(TokenType.RPAREN).isPresent()) {
 			eatNewlines();
 			return left;

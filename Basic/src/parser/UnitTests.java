@@ -17,6 +17,10 @@ public class UnitTests{
 	Lexer lex8 = new Lexer("READ(cat, hat, rat)", 1);
 	Lexer lex9 = new Lexer("DATA(56.2, 78, \"hello\")", 1);
 	Lexer lex10 = new Lexer("INPUT(\"hello\", cat, hat)", 1);
+	Lexer lex11 = new Lexer("MID$(hello, 2, 1)\nRANDOM()\nVAL(stringVar)",1);
+	Lexer lex12 = new Lexer("WHILE x > 5 endWhile",1);
+	Lexer lex13 = new Lexer("FOR x = 1 TO 10 STEP 1",1);
+	Lexer lex14 = new Lexer("IF x < 7 THEN label",1);
 //orderOfOpTests verify that various expressions return the correct order of operations and skip newlines
 //  !!  OrderOfOpTests currently do not work as the main method was changed to not  directly call expression
 /*
@@ -71,7 +75,7 @@ public void printNodeTest() throws InvalidCharacterException {
 	ProgramNode program6 = parser6.parse();
 	String s = program6.toString();
 	System.out.println(program6.toString());
-	assertEquals("Print: ((1 ADD 2), (2 ADD 1), string: \"hello\", )\n", s);
+	assertEquals("Print: ((1 ADD 2), (2 ADD 1), string: \"hello\", )\n\n", s);
 }
 //Test 7 tests the Statements() function's ability to process AssignmentNodes
 @Test
@@ -81,7 +85,7 @@ public void assignmentNodeTest() throws InvalidCharacterException {
 	ProgramNode program7 = parser7.parse();
 	String s = program7.toString();
 	System.out.println(program7.toString());
-	assertEquals("variable: hello = (5 ADD 3)", s);
+	assertEquals("variable: hello = (5 ADD 3)\n", s);
 }
 //Test 8 tests the Statements() function's ability to process ReadNode
 @Test
@@ -91,7 +95,7 @@ public void readNodeTest() throws InvalidCharacterException {
 	ProgramNode program8 = parser8.parse();
 	String s = program8.toString();
 	System.out.println(program8.toString());
-	assertEquals("Read: (variable: cat, variable: hat, variable: rat, )\n", s);
+	assertEquals("Read: (variable: cat, variable: hat, variable: rat, )\n\n", s);
 }
 //Test 9 tests the Statements() function's ability to process DataNode
 @Test
@@ -101,7 +105,7 @@ public void dataNodeTest() throws InvalidCharacterException {
 	ProgramNode program9 = parser9.parse();
 	String s = program9.toString();
 	System.out.println(program9.toString());
-	assertEquals("Data: (56.2, 78, string: \"hello\", )\n", s);
+	assertEquals("Data: (56.2, 78, string: \"hello\", )\n\n", s);
 }
 //Test 10 tests the Statements() function's ability to process InputNode
 @Test
@@ -111,6 +115,48 @@ public void inputNodeTest() throws InvalidCharacterException {
 	ProgramNode program10 = parser10.parse();
 	String s = program10.toString();
 	System.out.println(program10.toString());
-	assertEquals("Input: (string: \"hello\", variable: cat, variable: hat, )\n", s);
+	assertEquals("Input: (string: \"hello\", variable: cat, variable: hat, )\n\n", s);
+}
+//Test 11 tests the ability to process functions and their arguments
+@Test
+public void functionNodesTest() throws InvalidCharacterException {
+	var lex11List = lex11.lex();
+	Parser parser11 = new Parser(lex11List);
+	ProgramNode program11 = parser11.parse();
+	String s = program11.toString();
+	System.out.println(program11.toString());
+	assertEquals("function MID$( (variable: hello) (2) (1) )\n"
+			+ "function RANDOM(void)\n"
+			+ "function VALINT( (variable: stringVar) )\n", s);
+}
+//Test 12 tests the ability to process while Nodes and BooleanExpNodes
+@Test
+public void WhileNodeTest() throws InvalidCharacterException {
+	var lex12List = lex12.lex();
+	Parser parser12 = new Parser(lex12List);
+	ProgramNode program12 = parser12.parse();
+	String s = program12.toString();
+	System.out.println(program12.toString());
+	assertEquals("WHILE(variable: x GREATERTHAN 5) EndLabel: endWhile\n", s);
+}
+//Test 13 tests the ability to process For Nodes
+@Test
+public void ForNodeTest() throws InvalidCharacterException {
+	var lex13List = lex13.lex();
+	Parser parser13 = new Parser(lex13List);
+	ProgramNode program13 = parser13.parse();
+	String s = program13.toString();
+	System.out.println(program13.toString());
+	assertEquals("FOR variable: x = 1 TO 10 STEP 1\n", s);
+}
+//Test 14 tests the ability to process If Nodes and BooleanExpNodes
+@Test
+public void IfNodeTest() throws InvalidCharacterException {
+	var lex14List = lex14.lex();
+	Parser parser14 = new Parser(lex14List);
+	ProgramNode program14 = parser14.parse();
+	String s = program14.toString();
+	System.out.println(program14.toString());
+	assertEquals("IF(variable: x LESSTHAN 7 THEN label)\n", s);
 }
 }
