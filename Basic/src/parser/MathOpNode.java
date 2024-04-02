@@ -6,6 +6,7 @@ public class MathOpNode extends Node{
 	private Node left;
 	private Node right;
 	private MathOp operator;
+	private NodeType type = NodeType.MathOp;
 	@Override
 	public String toString() {
 		return "(" +left.toString() +" "+ operator +" "+ right.toString() + ")";
@@ -14,6 +15,9 @@ public class MathOpNode extends Node{
 		operator = op;
 		left = leftNode;
 		right = rightNode;
+	}
+	public NodeType getNodeType() {
+		return this.type;
 	}
 	
 }

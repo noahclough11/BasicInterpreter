@@ -2,7 +2,8 @@ package parser;
 import java.util.LinkedList;
 //Represents a Basic program, using a list of nodes to represent the instructions of the program
 public class ProgramNode extends Node{
-	LinkedList<Node> instructions;
+	private NodeType type = NodeType.Program;
+	public LinkedList<Node> instructions;
 	public ProgramNode(LinkedList<Node> nodes) {
 		this.instructions = nodes;
 		
@@ -16,6 +17,9 @@ public class ProgramNode extends Node{
 			}
 		}
 		return s;
+	}
+	public NodeType getNodeType() {
+		return this.type;
 	}
 	
 }

@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import lexer.TokenType;
 
 public class FunctionNode extends StatementNode{
+	private NodeType type = NodeType.Function;
 	private TokenType functionName;
 	private LinkedList<Node> args;
 	public FunctionNode(TokenType functionName, LinkedList<Node> args) {
@@ -20,5 +21,8 @@ public class FunctionNode extends StatementNode{
 		  }
 		}
 		return "function " + functionName + "(" + s + ")";
+	}
+	public NodeType getNodeType() {
+		return this.type;
 	}
 }

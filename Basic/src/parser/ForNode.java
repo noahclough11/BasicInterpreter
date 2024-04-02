@@ -1,5 +1,6 @@
 package parser;
 public class ForNode extends StatementNode{
+	private NodeType type = NodeType.For;
 	private Node increment;
 	private Node variable;
 	private Node limit;
@@ -16,5 +17,8 @@ public class ForNode extends StatementNode{
 	@Override
 	public String toString() {
 		return "FOR "+variable.toString() + " TO "+ limit.toString() + " STEP " + increment.toString();
+	}
+	public NodeType getNodeType() {
+		return this.type;
 	}
 }

@@ -1,6 +1,7 @@
 package parser;
 //Represents a floating point number
 public class FloatNode extends Node{
+	private NodeType type;
 	private double number;
 	@Override
 	public String toString() {
@@ -11,5 +12,9 @@ public class FloatNode extends Node{
 	}
 	public FloatNode(double num) {
 		number = num;
+		this.type = NodeType.Float;
+	}
+	public NodeType getNodeType() {
+		return this.type;
 	}
 }	

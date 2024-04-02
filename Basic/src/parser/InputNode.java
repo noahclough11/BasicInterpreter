@@ -3,6 +3,7 @@ package parser;
 import java.util.LinkedList;
 
 public class InputNode extends StatementNode{
+	private NodeType type = NodeType.Input;
 	private LinkedList<Node> inputList;
 	public InputNode(LinkedList<Node> inputList) {
 		this.inputList = inputList;
@@ -14,5 +15,8 @@ public class InputNode extends StatementNode{
 			s += n.toString()+ ", ";
 		}
 		return s+ ")\n";
+	}
+	public NodeType getNodeType() {
+		return this.type;
 	}
 }

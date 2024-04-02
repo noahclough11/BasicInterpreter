@@ -3,9 +3,11 @@ package parser;
 import java.util.LinkedList;
 
 public class DataNode extends StatementNode{
-	private LinkedList<Node> dataList;
+	public LinkedList<Node> dataList;
+	private NodeType type;
 	public DataNode(LinkedList<Node> dataList) {
 		this.dataList = dataList;
+		this.type = NodeType.Data;
 	}
 	@Override
 	public String toString() {
@@ -14,5 +16,8 @@ public class DataNode extends StatementNode{
 			s += n.toString()+ ", ";
 		}
 		return s + ")\n";
+	}
+	public NodeType getNodeType() {
+		return this.type;
 	}
 }

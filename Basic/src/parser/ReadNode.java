@@ -4,6 +4,7 @@ import java.util.LinkedList;
 
 public class ReadNode extends StatementNode{
 	private LinkedList<Node> readList;
+	private NodeType type = NodeType.Read;
 	public ReadNode(LinkedList<Node> list) {
 		this.readList  = list;
 	}
@@ -15,5 +16,7 @@ public class ReadNode extends StatementNode{
 		}
 		return s+ ")\n";
 	}
-	
+	public NodeType getNodeType() {
+		return this.type;
+	}
 }
