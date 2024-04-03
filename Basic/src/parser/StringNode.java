@@ -12,4 +12,7 @@ public class StringNode extends Node{
 	public NodeType getNodeType() {
 		return this.type;
 	}
+	public String getValue() {
+		return this.value;
+	}
 }

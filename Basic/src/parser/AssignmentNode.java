@@ -9,7 +9,6 @@ public class AssignmentNode extends StatementNode{
 		this.variable = variable;
 		this.value = value;
 		this.type = NodeType.Assignment;
-		
 	}
 	@Override
 	public String toString() {
@@ -17,5 +16,11 @@ public class AssignmentNode extends StatementNode{
 	}
 	public NodeType getNodeType() {
 		return this.type;
+	}
+	public Node getValue() {
+		return this.value;
+	}
+	public String getVariableName() {
+		return variable.getName();
 	}
 }

@@ -16,5 +16,7 @@ public class LabeledStatementNode extends StatementNode{
 	public NodeType getNodeType() {
 		return this.type;
 	}
-	
+	public String getLabel() {
+		return this.label;
+	}
 }

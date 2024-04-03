@@ -3,7 +3,7 @@ package parser;
 import java.util.LinkedList;
 
 public class StatementsNode extends Node{
-	private NodeType type = NodeType.Statements;
+	private NodeType type;
 	public LinkedList<StatementNode> statements;
 	public StatementsNode(LinkedList<StatementNode> statements) {
 		this.statements = statements;
@@ -18,5 +18,8 @@ public class StatementsNode extends Node{
 	}
 	public NodeType getNodeType() {
 		return this.type;
+	}
+	public LinkedList<StatementNode> getList(){
+		return statements;
 	}
 }

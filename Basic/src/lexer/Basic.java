@@ -2,6 +2,8 @@ package lexer;
 
 import java.io.IOException;
 import java.util.LinkedList;
+
+import interpreter.Interpreter;
 import parser.Parser;
 import parser.ProgramNode;
 
@@ -30,6 +32,8 @@ public class Basic{
 		Parser parser = new Parser(tokensList);
 		ProgramNode program = parser.parse();
 		System.out.println(program.toString());
+		
+		Interpreter interpreter = new Interpreter(program);
 
 	}
 

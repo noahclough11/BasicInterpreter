@@ -13,4 +13,7 @@ public class VariableNode extends Node{
 	public NodeType getNodeType() {
 		return this.type;
 	}
+	public String getName() {
+		return this.name;
+	}
 }
