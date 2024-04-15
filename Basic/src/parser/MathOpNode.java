@@ -2,7 +2,7 @@ package parser;
 //Represents a math operation, with an operator and two operands,
 //numbers or other math operations which must be computed first
 public class MathOpNode extends Node{
-	enum MathOp{ADD, SUBTRACT, MULTIPLY, DIVIDE};
+	public enum MathOp{ADD, SUBTRACT, MULTIPLY, DIVIDE};
 	private Node left;
 	private Node right;
 	private MathOp operator;
@@ -18,6 +18,15 @@ public class MathOpNode extends Node{
 	}
 	public NodeType getNodeType() {
 		return this.type;
+	}
+	public Node getLeft() {
+		return this.left;
+	}
+	public Node getRight() {
+		return this.right;
+	}
+	public MathOp getOp() {
+		return this.operator;
 	}
 	
 }

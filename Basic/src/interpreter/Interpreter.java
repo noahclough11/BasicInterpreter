@@ -6,11 +6,18 @@ import java.util.LinkedList;
 import parser.AssignmentNode;
 import parser.DataNode;
 import parser.FloatNode;
+import parser.FunctionNode;
+import parser.InputNode;
 import parser.IntegerNode;
 import parser.LabeledStatementNode;
+import parser.MathOpNode;
+import parser.MathOpNode.MathOp;
 import parser.Node;
 import parser.NodeType;
+import parser.PrintNode;
 import parser.ProgramNode;
+import parser.ReadNode;
+import parser.StatementNode;
 import parser.StatementsNode;
 import parser.StringNode;
 import parser.VariableNode;
@@ -30,6 +37,110 @@ public class Interpreter{
 		logData();
 		logLabels();
 		logVariables();
+	}
+	int EvaluateInt(Node node) {
+		var type = node.getNodeType();
+		if (type == NodeType.MathOp) {
+			MathOpNode mathOp = (MathOpNode)node;
+			MathOp operator = mathOp.getOp();
+			switch (operator) {
+			case ADD:
+				return EvaluateInt(mathOp.getLeft()) + EvaluateInt(mathOp.getRight());
+			case SUBTRACT:
+				return EvaluateInt(mathOp.getLeft()) - EvaluateInt(mathOp.getRight());
+			case MULTIPLY:
+				return EvaluateInt(mathOp.getLeft()) * EvaluateInt(mathOp.getRight());
+			case DIVIDE:
+				return EvaluateInt(mathOp.getLeft()) / EvaluateInt(mathOp.getRight());
+			default:
+				break;
+			}
+		} else if (type == NodeType.Integer) {
+			IntegerNode intNode = (IntegerNode)node;
+			return intNode.getNumber();
+		} else if (type == NodeType.Function) {
+			FunctionNode func = (FunctionNode)node;
+			var funcType = func.getFuncType();
+			switch (funcType) {
+			case RANDOM:
+				return RANDOM();
+			case VALINT:
+				StringNode arg = (StringNode)func.args.get(0);
+				return VALINT(arg.getValue());
+			case VALFLOAT:
+				return null;
+			default:
+				return null;
+			
+			}
+		} else if (type == NodeType.Variable) {
+			VariableNode varNode = (VariableNode)node;
+			String varName = varNode.getName();
+			return intVariables.get(varName);
+		} else {
+			return null;
+		}
+	}
+	double EvaluateFloat(Node node) {
+			var type = node.getNodeType();
+			if (type == NodeType.MathOp) {
+				MathOpNode mathOp = (MathOpNode)node;
+				MathOp operator = mathOp.getOp();
+				switch (operator) {
+				case ADD:
+					return EvaluateFloat(mathOp.getLeft()) + EvaluateFloat(mathOp.getRight());
+				case SUBTRACT:
+					return EvaluateFloat(mathOp.getLeft()) - EvaluateFloat(mathOp.getRight());
+				case MULTIPLY:
+					return EvaluateFloat(mathOp.getLeft()) * EvaluateFloat(mathOp.getRight());
+				case DIVIDE:
+					return EvaluateFloat(mathOp.getLeft()) / EvaluateFloat(mathOp.getRight());
+				default:
+					break;
+				}
+			} else if (type == NodeType.Float) {
+				FloatNode fNode = (FloatNode)node;
+				return fNode.getNumber();
+			} else if (type == NodeType.Integer) {
+				IntegerNode intNode = (IntegerNode)node;
+				return (double)intNode.getNumber();
+			} else if (type == NodeType.Function) {
+				FunctionNode func = (FunctionNode)node;
+				var funcType = func.getFuncType();
+				switch (funcType) {
+				case RANDOM:
+					return RANDOM();
+				case VALFLOAT:
+					StringNode arg = (StringNode)func.args.get(0);
+					return VALFLOAT(arg.getValue());
+				case VALINT:
+					return null;
+				default:
+					return null;
+				
+				}
+			} else if (type == NodeType.Variable) {
+				VariableNode varNode = (VariableNode)node;
+				String varName = varNode.getName();
+				return floatVariables.get(varName);
+			} else {
+				return null;
+			}
+		
+	}
+	void Interpret(StatementNode statement) {
+		switch(statement.getNodeType()) {
+		case Read:
+			ReadNode read = (ReadNode)statement;
+		case Assignment:
+			AssignmentNode assign = (AssignmentNode)statement;
+		case Input:
+			InputNode input = (InputNode)statement;
+		case Print:
+			PrintNode print = (PrintNode)statement;
+		default:
+			break;	
+		}
 	}
 	void initializeHashMaps() {
 		labeledStatements = new HashMap<String, LabeledStatementNode>();

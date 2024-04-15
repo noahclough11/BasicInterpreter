@@ -6,7 +6,7 @@ import lexer.TokenType;
 public class FunctionNode extends StatementNode{
 	private NodeType type = NodeType.Function;
 	private TokenType functionName;
-	private LinkedList<Node> args;
+	public LinkedList<Node> args;
 	public FunctionNode(TokenType functionName, LinkedList<Node> args) {
 		this.functionName = functionName;
 		this.args = args;
@@ -24,5 +24,8 @@ public class FunctionNode extends StatementNode{
 	}
 	public NodeType getNodeType() {
 		return this.type;
+	}
+	public TokenType getFuncType() {
+		return this.functionName;
 	}
 }
