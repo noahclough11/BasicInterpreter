@@ -19,4 +19,7 @@ public class ReadNode extends StatementNode{
 	public NodeType getNodeType() {
 		return this.type;
 	}
+	public LinkedList<Node> getReadList(){
+		return this.readList;
+	}
 }

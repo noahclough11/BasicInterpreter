@@ -20,5 +20,7 @@ public class PrintNode extends StatementNode{
 	public NodeType getNodeType() {
 		return this.type;
 	}
-	
+	public LinkedList<Node> getPrintList(){
+		return this.toPrint;
+	}
 }
