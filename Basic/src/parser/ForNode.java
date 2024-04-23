@@ -21,4 +21,14 @@ public class ForNode extends StatementNode{
 	public NodeType getNodeType() {
 		return this.type;
 	}
+	public Node getVariable() {
+		return this.variable;
+	}
+	public IntegerNode getIncrement() {
+		return (IntegerNode)increment;
+		
+	}
+	public IntegerNode getLimit() {
+		return (IntegerNode)limit;
+	}
 }

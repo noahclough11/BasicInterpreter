@@ -14,4 +14,11 @@ public class IfNode extends StatementNode {
 	public NodeType getNodeType() {
 		return this.type;
 	}
+	public Node getBool() {
+		return this.booleanExp;
+	}
+	public String getLabel() {
+		return this.label;
+	}
+	
 }

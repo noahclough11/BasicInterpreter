@@ -42,7 +42,6 @@ public class Parser{
 		 var statements =  new LinkedList<StatementNode>();
 		 StatementNode state = null;
 		 do {
-			 
 			   state = Statement();
 			   if (state != null) {
 			  	 statements.add(state);
@@ -51,6 +50,7 @@ public class Parser{
 			   if(!tokenManager.MoreTokens()) {
 				   state = null;
 			   }
+			   
 		 } while(state != null);
 		
 		return new StatementsNode(statements);
@@ -106,6 +106,10 @@ public class Parser{
 		  if (t.isPresent()) {
 			  return InputStatement();
 		  }
+		  t = tokenManager.MatchAndRemove(TokenType.NEXT);
+		  if (t.isPresent()) {
+			  return new NextNode(tokenManager.MatchAndRemove(TokenType.WORD).get().getValue());
+		  }
 		  return functionInvocation();
 		}
 		return null;
@@ -133,6 +137,9 @@ public class Parser{
 	ForNode ForStatement() {
 		Node increment;
 		Node variable = Assignment();
+		if (variable == null) {
+			variable = new VariableNode(tokenManager.MatchAndRemove(TokenType.WORD).get().getValue());
+		}
 		tokenManager.MatchAndRemove(TokenType.TO);
 		Node limit = Expression();
 		var t = tokenManager.MatchAndRemove(TokenType.STEP);

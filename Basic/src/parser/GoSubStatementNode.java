@@ -11,4 +11,7 @@ public class GoSubStatementNode extends StatementNode{
 	public NodeType getNodeType() {
 		return this.type;
 	}
+	public String getLabel() {
+		return this.label;
+	}
 }

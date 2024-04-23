@@ -2,8 +2,11 @@ package interpreter;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.util.LinkedList;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import lexer.InvalidCharacterException;
@@ -19,7 +22,7 @@ import parser.StringNode;
 import parser.VariableNode;
 
 
-public class UnitTests{
+public class InterpreterUnitTests{
 	Lexer lex1 = new Lexer("variable = 4\n lineLabel: \n"
 			+ "DATA(56.2, 78.3, 55.2)", 1);
 	@Test
@@ -83,6 +86,7 @@ public class UnitTests{
 		assert inter1.stringVariables.get("second$") == "hat";
 		assert inter1.stringVariables.get("third$") == "rat";
 	}
+	@Test
 	public void inputTest2() throws InvalidCharacterException {
 		var lex1List = lex1.lex();
 		Parser parser1 = new Parser(lex1List);
@@ -102,6 +106,7 @@ public class UnitTests{
 		assert inter1.stringVariables.get("second$") == "bog";
 		assert inter1.stringVariables.get("third$") == "cog";
 	}
+	@Test
 	public void inputTest3() throws InvalidCharacterException {
 		var lex1List = lex1.lex();
 		Parser parser1 = new Parser(lex1List);
@@ -141,41 +146,70 @@ public class UnitTests{
 		test = result.pop();
 		assertEquals(test,"12");
 	}
-	public void printTest2() throws InvalidCharacterException {
-		var lex1List = lex1.lex();
+	//Sets the output to a different printstream instead of the console so that it can be tested against the correct result
+	private final ByteArrayOutputStream outputStreamCaptor = new ByteArrayOutputStream();
+
+	@Before
+	public void setUp() {
+	    System.setOut(new PrintStream(outputStreamCaptor));
+	}
+	@Test
+	//completeTests test the interpreters ability to lex, parse, and interpret a given BASIC program
+	public void completeTest1() throws InvalidCharacterException {
+		Lexer lexTest1 = new Lexer("FOR A = 7 TO 10\n"
+				+ "PRINT A\n"
+				+ "NEXT A\n"
+				+ "END", 1);
+		var lex1List = lexTest1.lex();
 		Parser parser1 = new Parser(lex1List);
 		ProgramNode program1 = parser1.parse();
 		Interpreter inter1 = new Interpreter(program1);
-		LinkedList<Node> printTestList = new LinkedList<Node>();
-		printTestList.add(new MathOpNode( MathOp.SUBTRACT,new FloatNode(5.3), new IntegerNode(5)));
-		printTestList.add(new MathOpNode( MathOp.DIVIDE,new IntegerNode(6), new IntegerNode(4)));
-		printTestList.add(new MathOpNode( MathOp.MULTIPLY,new IntegerNode(2), new FloatNode(2.5)));
-		
-		LinkedList<String> result = inter1.PrintTest(printTestList);
-		String test = result.pop();
-		assertEquals(test,"0.3");
-		test = result.pop();
-		assertEquals(test,"1");
-		test = result.pop();
-		assertEquals(test,"5");
+		inter1.Interpret();
+		assertEquals("78910", outputStreamCaptor.toString()
+			      .trim());
 	}
-	public void printTest3() throws InvalidCharacterException {
-		var lex1List = lex1.lex();
+	@Test
+	public void completeTest2() throws InvalidCharacterException {
+		Lexer lexTest1 = new Lexer("IF 5 < 7 THEN True\n"
+				+ "PRINT \"FALSE\"\n"
+				+ "END\n"
+				+ "True: PRINT \"TRUE\"\n"
+				+ "END", 1);
+		var lex1List = lexTest1.lex();
 		Parser parser1 = new Parser(lex1List);
 		ProgramNode program1 = parser1.parse();
 		Interpreter inter1 = new Interpreter(program1);
-		LinkedList<Node> printTestList = new LinkedList<Node>();
-		printTestList.add(new MathOpNode( MathOp.ADD,new IntegerNode(25), new FloatNode(3.5)));
-		printTestList.add(new MathOpNode( MathOp.DIVIDE,new FloatNode(10), new IntegerNode(5)));
-		printTestList.add(new MathOpNode( MathOp.MULTIPLY,new IntegerNode(9), new IntegerNode(2)));
-		
-		LinkedList<String> result = inter1.PrintTest(printTestList);
-		String test = result.pop();
-		assertEquals(test,"21.5");
-		test = result.pop();
-		assertEquals(test,"2.0");
-		test = result.pop();
-		assertEquals(test,"18");
+		inter1.Interpret();
+		assertEquals("TRUE", outputStreamCaptor.toString()
+			      .trim());
 	}
-	
+	@Test
+	public void completeTest3() throws InvalidCharacterException {
+		Lexer lexTest3 = new Lexer("FOR X = 2 TO 5\n"
+				+ "PRINT X\n"
+				+ "NEXT X\n"
+				+ "END", 1);
+		var lex1List = lexTest3.lex();
+		Parser parser1 = new Parser(lex1List);
+		ProgramNode program1 = parser1.parse();
+		Interpreter inter1 = new Interpreter(program1);
+		inter1.Interpret();
+		assertEquals("2345", outputStreamCaptor.toString()
+			      .trim());
+	}
+	@Test
+	public void completeTest4() throws InvalidCharacterException {
+		Lexer lexTest1 = new Lexer("IF 5 > 7 THEN True\n"
+				+ "PRINT \"FALSE\"\n"
+				+ "END\n"
+				+ "True: PRINT \"TRUE\"\n"
+				+ "END", 1);
+		var lex1List = lexTest1.lex();
+		Parser parser1 = new Parser(lex1List);
+		ProgramNode program1 = parser1.parse();
+		Interpreter inter1 = new Interpreter(program1);
+		inter1.Interpret();
+		assertEquals("FALSE", outputStreamCaptor.toString()
+			      .trim());
+	}
 }

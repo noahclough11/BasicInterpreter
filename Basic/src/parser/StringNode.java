@@ -7,7 +7,7 @@ public class StringNode extends Node{
 		}	
 	@Override
 	public String toString() {
-		return "string: "+ "\""+value+ "\"";
+		return value;
 	}
 	public NodeType getNodeType() {
 		return this.type;

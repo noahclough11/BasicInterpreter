@@ -19,4 +19,7 @@ public class LabeledStatementNode extends StatementNode{
 	public String getLabel() {
 		return this.label;
 	}
+	public StatementNode getStatement() {
+		return (StatementNode) this.statement;
+	}
 }

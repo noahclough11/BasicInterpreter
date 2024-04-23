@@ -32,8 +32,9 @@ public class Basic{
 		Parser parser = new Parser(tokensList);
 		ProgramNode program = parser.parse();
 		System.out.println(program.toString());
-		
 		Interpreter interpreter = new Interpreter(program);
+		interpreter.Interpret();
+		
 
 	}
 

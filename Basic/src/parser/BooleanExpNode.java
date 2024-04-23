@@ -20,4 +20,13 @@ public class BooleanExpNode extends Node{
 	public NodeType getNodeType() {
 		return this.type;
 	}
+	public Node getLeft() {
+		return this.left;
+	}
+	public Node getRight() {
+		return this.right;
+	}
+	public TokenType getOp() {
+		return this.operator;
+	}
 }
